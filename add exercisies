@@ -1,0 +1,40 @@
+from pathlib import Path
+from datetime import datetime
+import shutil
+
+student_id = "2025-1234"
+student_name = "Sophia Phoebe I. Erilla"
+
+base_dir = Path.home() / "Documents" / "Activity_5_Exercises"
+base_dir.mkdir(parents=True, exist_ok=True)
+
+target_file = base_dir / "intro.txt"
+
+if not target_file.exists():
+    target_file.write_text("This is the original file for backup testing.", encoding="utf-8")
+
+backup_dir = base_dir / f"backup_{student_id}"
+backup_dir.mkdir(parents=True, exist_ok=True)
+
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+backup_filename = f"{target_file.stem}_{student_id}_{timestamp}{target_file.suffix}"
+backup_path = backup_dir / backup_filename
+
+shutil.copy2(target_file, backup_path)
+
+file_size = backup_path.stat().st_size
+
+log_file = backup_dir / f"backup_log_{student_id}.txt"
+with log_file.open("a", encoding="utf-8") as log:
+    log.write(f"Student ID: {student_id}\n")
+    log.write(f"Student Name: {student_name}\n")
+    log.write(f"Original Filename: {target_file.name}\n")
+    log.write(f"Timestamp: {timestamp}\n")
+    log.write(f"File Size: {file_size} bytes\n")
+    log.write(f"Backup File Path: {backup_path}\n")
+    log.write("-" * 50 + "\n")
+
+print(f"Backup completed for {student_id} ({student_name})")
+print(f"File saved as: {backup_filename}")
+print(f"Log updated at: {backup_dir}")
